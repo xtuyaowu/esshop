@@ -1,3 +1,10 @@
-﻿<script>
+﻿<!--<script>
 location.href="index.htm";
+</script>-->
+<script type="text/javascript">
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        location.href = "wap/index.htm"; //可以换成http地址
+    }else{
+        location.href ="index.htm";
+    }
 </script>
