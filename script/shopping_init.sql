@@ -10,10 +10,68 @@ Target Server Type    : MYSQL
 Target Server Version : 50636
 File Encoding         : 65001
 
-Date: 2018-05-19 21:07:26
+Date: 2018-05-20 17:46:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for `bc_order`
+-- ----------------------------
+DROP TABLE IF EXISTS `bc_order`;
+CREATE TABLE `bc_order` (
+  `order_address` varchar(64) NOT NULL COMMENT '订单地址 ',
+  `order_type` int(2) NOT NULL COMMENT '订单类型{1:确权,2:邀请,3:购买}',
+  `user_address_from` varchar(64) NOT NULL COMMENT '转出账户',
+  `user_address_to` varchar(64) NOT NULL COMMENT '转入账户',
+  `all_money` varchar(64) NOT NULL COMMENT '交易金额',
+  `saas_money` varchar(64) NOT NULL COMMENT '平台金额',
+  `real_money` varchar(64) NOT NULL COMMENT '真实金额',
+  `pay_state_saas` int(2) NOT NULL COMMENT '支付状态{0:默认,1:清算,2:在途,3:成功,4:失败}',
+  `pay_state_user` int(2) NOT NULL COMMENT '支付状态{0:默认,1:清算,2:在途,3:成功,4:失败}',
+  `order_address_saas` varchar(128) DEFAULT NULL COMMENT '以太坊账单地址',
+  `order_address_user` varchar(128) DEFAULT NULL COMMENT '以太坊账单地址',
+  `remark` varchar(255) DEFAULT NULL COMMENT '订单备注',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `addTime` datetime DEFAULT NULL,
+  `deleteStatus` bit(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='区块链-订单';
+
+-- ----------------------------
+-- Records of bc_order
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `bc_user`
+-- ----------------------------
+DROP TABLE IF EXISTS `bc_user`;
+CREATE TABLE `bc_user` (
+  `id` varchar(64) NOT NULL COMMENT '编号',
+  `bc_type` varchar(64) NOT NULL COMMENT '区块链类型',
+  `bc_account` varchar(64) NOT NULL COMMENT '区块链用户主键',
+  `bc_balance` varchar(64) DEFAULT '0' COMMENT '我的以太币',
+  `bc_token_balance` varchar(64) DEFAULT NULL COMMENT '我的代币',
+  `saas_user_id` varchar(64) NOT NULL COMMENT '平台用户主键',
+  `saas_user_name` varchar(64) NOT NULL COMMENT '平台账号',
+  `saas_user_pass` varchar(64) NOT NULL COMMENT '平台密码',
+  `account_token` varchar(64) DEFAULT NULL COMMENT '账户令牌',
+  `refresh_token` varchar(64) DEFAULT NULL COMMENT '刷新令牌',
+  `create_by` varchar(64) NOT NULL COMMENT '创建者',
+  `addTime` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) NOT NULL COMMENT '更新者',
+  `update_date` datetime NOT NULL COMMENT '更新时间',
+  `remarks` varchar(255) DEFAULT NULL COMMENT '备注信息',
+  `deleteStatus` bit(1) NOT NULL DEFAULT b'0' COMMENT '删除标记',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `block_chain_del_flag` (`deleteStatus`),
+  KEY `block_chain_user_id` (`saas_user_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='区块链-用户';
+
+-- ----------------------------
+-- Records of bc_user
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for `shopping_accessory`
@@ -542,7 +600,7 @@ CREATE TABLE `shopping_activity` (
   KEY `FKE6E480620059740` (`ac_acc_id`),
   CONSTRAINT `FK11BFAD20D8BBB351` FOREIGN KEY (`ac_acc_id`) REFERENCES `shopping_accessory` (`id`),
   CONSTRAINT `FKE6E480620059740` FOREIGN KEY (`ac_acc_id`) REFERENCES `shopping_accessory` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_activity
@@ -568,7 +626,7 @@ CREATE TABLE `shopping_activity_goods` (
   CONSTRAINT `FKA9F9A5DD60FB2C1F` FOREIGN KEY (`act_id`) REFERENCES `shopping_activity` (`id`),
   CONSTRAINT `FKA9F9A5DDA6BB88F7` FOREIGN KEY (`ag_admin_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FKA9F9A5DDED2E89CB` FOREIGN KEY (`ag_goods_id`) REFERENCES `shopping_goods1` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_activity_goods
@@ -598,7 +656,7 @@ CREATE TABLE `shopping_address` (
   CONSTRAINT `FK74EB4C1DFA5E3FC2` FOREIGN KEY (`area_id`) REFERENCES `shopping_area` (`id`),
   CONSTRAINT `FK9ABDBC32FB91D11` FOREIGN KEY (`area_id`) REFERENCES `shopping_area` (`id`),
   CONSTRAINT `FK9ABDBC3537B6C51` FOREIGN KEY (`user_id`) REFERENCES `shopping_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32775 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_address
@@ -750,7 +808,7 @@ CREATE TABLE `shopping_album` (
   CONSTRAINT `FK192D24D89FF5815D` FOREIGN KEY (`album_cover_id`) REFERENCES `shopping_accessory` (`id`),
   CONSTRAINT `FK2FF965FE537B6C51` FOREIGN KEY (`user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FK2FF965FE58AB9D6E` FOREIGN KEY (`album_cover_id`) REFERENCES `shopping_accessory` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_album
@@ -4406,7 +4464,7 @@ CREATE TABLE `shopping_bargain_goods` (
   KEY `FKECBE585282133C8C` (`bg_goods_id`),
   CONSTRAINT `FKECBE585282133C8C` FOREIGN KEY (`bg_goods_id`) REFERENCES `shopping_goods1` (`id`),
   CONSTRAINT `FKECBE5852AB0DFB98` FOREIGN KEY (`bg_admin_user_id`) REFERENCES `shopping_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_bargain_goods
@@ -4770,7 +4828,7 @@ CREATE TABLE `shopping_delivery_goods` (
   CONSTRAINT `FKCE37CF0243A4CD77` FOREIGN KEY (`d_admin_user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FKCE37CF024D247AA2` FOREIGN KEY (`d_delivery_goods_id`) REFERENCES `shopping_goods1` (`id`),
   CONSTRAINT `FKCE37CF02A5AA7B4D` FOREIGN KEY (`d_goods_id`) REFERENCES `shopping_goods1` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_delivery_goods
@@ -4794,7 +4852,7 @@ CREATE TABLE `shopping_delivery_log` (
   KEY `FKE61BD5F01C0CA9F2` (`store_id`),
   CONSTRAINT `FK69A11E0A920D7683` FOREIGN KEY (`store_id`) REFERENCES `shopping_store` (`id`),
   CONSTRAINT `FKE61BD5F01C0CA9F2` FOREIGN KEY (`store_id`) REFERENCES `shopping_store` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_delivery_log
@@ -4869,7 +4927,7 @@ CREATE TABLE `shopping_dynamic` (
   CONSTRAINT `FKCCB9A00E920D7683` FOREIGN KEY (`store_id`) REFERENCES `shopping_store` (`id`),
   CONSTRAINT `FKCCB9A00EA995E663` FOREIGN KEY (`goods_id`) REFERENCES `shopping_goods1` (`id`),
   CONSTRAINT `FKCCB9A00EEB7ECE12` FOREIGN KEY (`img_id`) REFERENCES `shopping_accessory` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_dynamic
@@ -4908,7 +4966,7 @@ CREATE TABLE `shopping_evaluate` (
   CONSTRAINT `FK7AC7019067CF395C` FOREIGN KEY (`evaluate_user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FK7AC70190D56B72A8` FOREIGN KEY (`evaluate_seller_user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FK7AC70190E66AF58D` FOREIGN KEY (`of_id`) REFERENCES `shopping_orderform` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_evaluate
@@ -4981,7 +5039,7 @@ CREATE TABLE `shopping_favorite` (
   CONSTRAINT `FKAFC41E931C0CA9F2` FOREIGN KEY (`store_id`) REFERENCES `shopping_store` (`id`),
   CONSTRAINT `FKAFC41E931E208F02` FOREIGN KEY (`user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FKAFC41E93339519D2` FOREIGN KEY (`goods_id`) REFERENCES `shopping_goods1` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=131077 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_favorite
@@ -5155,7 +5213,7 @@ CREATE TABLE `shopping_goods` (
   CONSTRAINT `FK304F7EE5AD5743E0` FOREIGN KEY (`goods_main_photo_id`) REFERENCES `shopping_accessory` (`id`),
   CONSTRAINT `FK304F7EE5C292B563` FOREIGN KEY (`ztc_admin_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FK304F7EE5F140A6A4` FOREIGN KEY (`goods_brand_id`) REFERENCES `shopping_goodsbrand` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=98461 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_goods
@@ -5194,7 +5252,7 @@ CREATE TABLE `shopping_goodsbrand` (
   CONSTRAINT `FKC382CD2813E0E513` FOREIGN KEY (`category_id`) REFERENCES `shopping_brandcategory` (`id`),
   CONSTRAINT `FKC382CD281E208F02` FOREIGN KEY (`user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FKC382CD28A6DFD9B2` FOREIGN KEY (`brandLogo_id`) REFERENCES `shopping_accessory` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_goodsbrand
@@ -5222,7 +5280,7 @@ CREATE TABLE `shopping_goodscart` (
   CONSTRAINT `FK64EC15F339519D2` FOREIGN KEY (`goods_id`) REFERENCES `shopping_goods1` (`id`),
   CONSTRAINT `FK64EC15F62D0D4E3` FOREIGN KEY (`sc_id`) REFERENCES `shopping_storecart` (`id`),
   CONSTRAINT `FK6D29FF859F21119E` FOREIGN KEY (`of_id`) REFERENCES `shopping_orderform` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=229695 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_goodscart
@@ -5364,7 +5422,7 @@ CREATE TABLE `shopping_goodsclassstaple` (
   CONSTRAINT `FK24B7422DD06648` FOREIGN KEY (`gc_id`) REFERENCES `shopping_goodsclass` (`id`),
   CONSTRAINT `FK335B1F3C6BDDCC57` FOREIGN KEY (`gc_id`) REFERENCES `shopping_goodsclass` (`id`),
   CONSTRAINT `FK335B1F3C920D7683` FOREIGN KEY (`store_id`) REFERENCES `shopping_store` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=65538 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_goodsclassstaple
@@ -5661,7 +5719,7 @@ CREATE TABLE `shopping_goods_return` (
   CONSTRAINT `FK4F8CD7B0E66AF58D` FOREIGN KEY (`of_id`) REFERENCES `shopping_orderform` (`id`),
   CONSTRAINT `FKD3121FCA537B6C51` FOREIGN KEY (`user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FKD3121FCA9F21119E` FOREIGN KEY (`of_id`) REFERENCES `shopping_orderform` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_goods_return
@@ -5688,7 +5746,7 @@ CREATE TABLE `shopping_goods_returnitem` (
   CONSTRAINT `FK892AFAC3339519D2` FOREIGN KEY (`goods_id`) REFERENCES `shopping_goods1` (`id`),
   CONSTRAINT `FKBA3AA5DD79982ABE` FOREIGN KEY (`gr_id`) REFERENCES `shopping_goods_return` (`id`),
   CONSTRAINT `FKBA3AA5DDA995E663` FOREIGN KEY (`goods_id`) REFERENCES `shopping_goods1` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_goods_returnitem
@@ -5718,7 +5776,7 @@ CREATE TABLE `shopping_goods_returnlog` (
   CONSTRAINT `FK8A22F73A79982ABE` FOREIGN KEY (`gr_id`) REFERENCES `shopping_goods_return` (`id`),
   CONSTRAINT `FK8A22F73A95A12042` FOREIGN KEY (`return_user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FK8A22F73A9F21119E` FOREIGN KEY (`of_id`) REFERENCES `shopping_orderform` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_goods_returnlog
@@ -5773,7 +5831,7 @@ CREATE TABLE `shopping_group` (
   `status` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_group
@@ -5887,7 +5945,7 @@ CREATE TABLE `shopping_group_goods` (
   CONSTRAINT `FKE84595E5493829C3` FOREIGN KEY (`group_id`) REFERENCES `shopping_group` (`id`),
   CONSTRAINT `FKE84595E55D2DC6AF` FOREIGN KEY (`gg_gc_id`) REFERENCES `shopping_group_class` (`id`),
   CONSTRAINT `FKE84595E5E08B86E2` FOREIGN KEY (`gg_goods_id`) REFERENCES `shopping_goods1` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32780 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_group_goods
@@ -5932,7 +5990,7 @@ CREATE TABLE `shopping_homepage` (
   KEY `FK543424E58A073F1A` (`owner_id`),
   CONSTRAINT `FK543424E58A073F1A` FOREIGN KEY (`owner_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FK578589FFBF621C69` FOREIGN KEY (`owner_id`) REFERENCES `shopping_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_homepage
@@ -5983,7 +6041,7 @@ CREATE TABLE `shopping_homepage_goodsclass_log` (
   KEY `FKAD270FA7729F7B91` (`goodsClass_id`),
   CONSTRAINT `FKAD270FA765403E11` FOREIGN KEY (`homepageGoodsClass_id`) REFERENCES `shopping_homepage_goodsclass` (`id`),
   CONSTRAINT `FKAD270FA7729F7B91` FOREIGN KEY (`goodsClass_id`) REFERENCES `shopping_goodsclass` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_homepage_goodsclass_log
@@ -6033,7 +6091,7 @@ CREATE TABLE `shopping_integrallog` (
   CONSTRAINT `FKCF2651C1C1009F6F` FOREIGN KEY (`integral_user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FKEC2A9E67C8F25896` FOREIGN KEY (`operate_user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FKEC2A9E67F65B7CBE` FOREIGN KEY (`integral_user_id`) REFERENCES `shopping_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1835310 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_integrallog
@@ -6074,7 +6132,7 @@ CREATE TABLE `shopping_integral_goods` (
   KEY `FK25A95EBA3A70688B` (`ig_goods_img_id`),
   CONSTRAINT `FK25A95EBA3A70688B` FOREIGN KEY (`ig_goods_img_id`) REFERENCES `shopping_accessory` (`id`),
   CONSTRAINT `FKDCFD0854F326849C` FOREIGN KEY (`ig_goods_img_id`) REFERENCES `shopping_accessory` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_integral_goods
@@ -6169,7 +6227,7 @@ CREATE TABLE `shopping_message` (
   CONSTRAINT `FKF23EB030393D0AAF` FOREIGN KEY (`parent_id`) REFERENCES `shopping_message` (`id`),
   CONSTRAINT `FKF23EB03057C55027` FOREIGN KEY (`toUser_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FKF23EB030BE806418` FOREIGN KEY (`fromUser_id`) REFERENCES `shopping_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_message
@@ -6286,7 +6344,7 @@ CREATE TABLE `shopping_orderform` (
   CONSTRAINT `FK9BD986FBB62A45D2` FOREIGN KEY (`payment_id`) REFERENCES `shopping_payment` (`id`),
   CONSTRAINT `FK9BD986FBF8442271` FOREIGN KEY (`ec_id`) REFERENCES `shopping_express_company` (`id`),
   CONSTRAINT `FK9BD986FBFC1A79F5` FOREIGN KEY (`addr_id`) REFERENCES `shopping_address` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=229454 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_orderform
@@ -6309,7 +6367,7 @@ CREATE TABLE `shopping_order_log` (
   KEY `FK9BD64CBCE8C5507` (`log_user_id`),
   CONSTRAINT `FK2B18AE29F21119E` FOREIGN KEY (`of_id`) REFERENCES `shopping_orderform` (`id`),
   CONSTRAINT `FK9BD64CBCE8C5507` FOREIGN KEY (`log_user_id`) REFERENCES `shopping_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=296089 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_order_log
@@ -6488,7 +6546,7 @@ CREATE TABLE `shopping_predeposit_log` (
   CONSTRAINT `FKDD0C74D11B0A508B` FOREIGN KEY (`pd_log_user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FKDD0C74D1321DC511` FOREIGN KEY (`predeposit_id`) REFERENCES `shopping_predeposit` (`id`),
   CONSTRAINT `FKDD0C74D14CCA9953` FOREIGN KEY (`pd_log_admin_id`) REFERENCES `shopping_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=182 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_predeposit_log
@@ -8834,7 +8892,7 @@ CREATE TABLE `shopping_store` (
   CONSTRAINT `FK1A2E9F4AA10642E1` FOREIGN KEY (`store_license_id`) REFERENCES `shopping_accessory` (`id`),
   CONSTRAINT `FK1A2E9F4AC98DF95A` FOREIGN KEY (`store_weixin_logo_id`) REFERENCES `shopping_accessory` (`id`),
   CONSTRAINT `FK1A2E9F4AFA5E3FC2` FOREIGN KEY (`area_id`) REFERENCES `shopping_area` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32776 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=32770 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_store
@@ -8863,7 +8921,7 @@ CREATE TABLE `shopping_storecart` (
   CONSTRAINT `FK1808656A1C0CA9F2` FOREIGN KEY (`store_id`) REFERENCES `shopping_store` (`id`),
   CONSTRAINT `FK1808656A1E208F02` FOREIGN KEY (`user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FK7EE3A390537B6C51` FOREIGN KEY (`user_id`) REFERENCES `shopping_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_storecart
@@ -9047,13 +9105,13 @@ CREATE TABLE `shopping_store_point` (
   UNIQUE KEY `id` (`id`),
   KEY `FK3183385B1C0CA9F2` (`store_id`),
   CONSTRAINT `FK3183385B1C0CA9F2` FOREIGN KEY (`store_id`) REFERENCES `shopping_store` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32776 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=32770 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_store_point
 -- ----------------------------
-INSERT INTO `shopping_store_point` VALUES ('1', '2014-01-05 15:07:48', '', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '1', '2018-05-19 21:00:01');
-INSERT INTO `shopping_store_point` VALUES ('32769', null, '', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '32769', '2018-05-19 21:00:02');
+INSERT INTO `shopping_store_point` VALUES ('1', '2014-01-05 15:07:48', '', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '1', '2018-05-19 21:30:00');
+INSERT INTO `shopping_store_point` VALUES ('32769', null, '', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '0.0', '0', '0', '0', '0', '0', '0.0', '32769', '2018-05-19 21:30:00');
 
 -- ----------------------------
 -- Table structure for `shopping_store_slide`
@@ -9103,7 +9161,7 @@ CREATE TABLE `shopping_store_stat` (
 -- ----------------------------
 -- Records of shopping_store_stat
 -- ----------------------------
-INSERT INTO `shopping_store_stat` VALUES ('1', '2018-05-19 21:00:00', '', '0', '2', '2', '2018-05-19 21:30:00', '0.00', '0', '0', '0', '0', '0', '0', '0');
+INSERT INTO `shopping_store_stat` VALUES ('1', '2018-05-19 21:30:00', '', '0', '2', '2', '2018-05-19 22:00:00', '0.00', '0', '0', '0', '0', '0', '0', '0');
 
 -- ----------------------------
 -- Table structure for `shopping_sysconfig`
@@ -9254,7 +9312,7 @@ CREATE TABLE `shopping_sysconfig` (
 -- ----------------------------
 -- Records of shopping_sysconfig
 -- ----------------------------
-INSERT INTO `shopping_sysconfig` VALUES ('1', '2016-03-08 19:56:41', '', '', '1024', '1024', '系统维护中...', '<script type=\"text/javascript\">var cnzz_protocol = ((\"https:\" == document.location.protocol) ? \" https://\" : \" http://\");document.write(unescape(\"%3Cspan id=\'cnzz_stat_icon_1257547103\'%3E%3C/span%3E%3Cscript src=\'\" + cnzz_protocol + \"s11.cnzz.com/z_stat.php%3Fid%3D1257547103\' type=\'text/javascript\'%3E%3C/script%3E\"));</script>', '30', '0', null, '{\"creditrule29\":1500,\"creditrule28\":1401,\"creditrule27\":1400,\"creditrule26\":1301,\"creditrule25\":1300,\"creditrule24\":1201,\"creditrule23\":1200,\"creditrule22\":1101,\"creditrule21\":1100,\"creditrule20\":1001,\"creditrule2\":101,\"creditrule1\":100,\"creditrule4\":201,\"creditrule3\":200,\"creditrule0\":1,\"creditrule19\":1000,\"creditrule18\":901,\"creditrule9\":500,\"creditrule7\":400,\"creditrule15\":800,\"creditrule8\":401,\"creditrule14\":701,\"creditrule5\":300,\"creditrule17\":900,\"creditrule6\":301,\"creditrule16\":801,\"creditrule11\":600,\"creditrule10\":501,\"creditrule13\":700,\"creditrule12\":601}', '', 'shopping,health,健康,区块链,健康币,以太坊,比特币', '', 'smtp.163.com', '25', 'healthcoin132', 'healthcoin@163.com', 'healthcoin@163.com', '健康平台', '0', '', '10', '', '缓解疲劳,美容养颜,调节血糖,改善睡眠,纸尿裤', '1024', 'sidYearMonthDayImg', 'gif|jpg|jpeg|bmp|png|tbi', '0', '', '0', '', 'shopping,health,健康,区块链,健康币,以太坊,比特币', '0', '0', '300', '300', '', '', '', 'normal', '<div id=\"bdshare\" class=\"bdshare_t bds_tools get-codes-bdshare\">\r\n<a class=\"bds_tsina\"></a>\r\n<a class=\"bds_tqq\"></a>\r\n<span class=\"bds_more\">更多</span>\r\n<a class=\"shareCount\"></a>\r\n</div>\r\n<script type=\"text/javascript\" id=\"bdshare_js\" data=\"type=tools&uid=5015224\" ></script>\r\n<script type=\"text/javascript\" id=\"bdshell_js\"></script>\r\n<script type=\"text/javascript\">\r\ndocument.getElementById(\"bdshell_js\").src = \"http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=\" + Math.ceil(new Date()/3600000)\r\n</script>', '160', '160', '', '123456', '13641194411', null, 'shopping_admin', '', '{\"alipay_wap\":true,\"balance\":true,\"payafter\":true,\"weixin\":true,\"alipay\":true,\"paypal\":true,\"outline\":true}', 'zh_cn', 'default\r\nblue\r\npink\r\ngreen\r\nblack\r\nviolet\r\nbeach\r\nchina\r\nclothes\r\nwood\r\nlovely\r\nembossed\r\ntea\r\nclassic_black\r\nredware\r\ncoloured_glaze\r\norange\r\nchocolate\r\nbamboo\r\nflax', 'health', 'upload', '{\"creditrule29\":800,\"creditrule28\":751,\"creditrule27\":700,\"creditrule26\":651,\"creditrule25\":650,\"creditrule24\":601,\"creditrule23\":600,\"creditrule22\":551,\"creditrule21\":550,\"creditrule20\":501,\"creditrule2\":51,\"creditrule1\":50,\"creditrule4\":101,\"creditrule3\":100,\"creditrule0\":1,\"creditrule19\":500,\"creditrule18\":451,\"creditrule9\":250,\"creditrule7\":200,\"creditrule15\":400,\"creditrule8\":201,\"creditrule14\":351,\"creditrule5\":150,\"creditrule17\":450,\"creditrule6\":151,\"creditrule16\":401,\"creditrule11\":300,\"creditrule10\":251,\"creditrule13\":350,\"creditrule12\":301}', '', '', 'health', '', '30', '', '1', '2', '3', '426500', '3', '', 'bbs\r\nforum', '', '', '', '', '<meta property=\"wb:webmaster\" content=\"3c0d2bedd819ab1c\" />', '', '857824403', 'c64298f7b04d0a56613b327791d0fa0f', null, '2018-05-19 00:00:04', '0', '0', '7', '3', '20', '8.00', '', '1', '天天特价', '508188494', '13910227615', '0', '', '4c68365adbe58d72', '', '', '', '', '', '', '', '', '', '', '¥', '3', '30', '1', '买就送', 'blue', '60', '5', '0', '7', '7', '', '50', '1', 'shopping_c2c微商城', 'jkdserdfger3dfgdfgvbd54dfgdf', '34sdfsdfsdge34sdgsdgdshtgf657sdfgsd43sdfsdgsd', 'shopping_c2c', '微信关注欢迎词\r\n          \r\n          \r\n          \r\n          ', null, '426063', '');
+INSERT INTO `shopping_sysconfig` VALUES ('1', '2016-03-08 19:56:41', '', '', '1024', '1024', '?????...', '<script type=\"text/javascript\">var cnzz_protocol = ((\"https:\" == document.location.protocol) ? \" https://\" : \" http://\");document.write(unescape(\"%3Cspan id=\'cnzz_stat_icon_1257547103\'%3E%3C/span%3E%3Cscript src=\'\" + cnzz_protocol + \"s11.cnzz.com/z_stat.php%3Fid%3D1257547103\' type=\'text/javascript\'%3E%3C/script%3E\"));</script>', '30', '10', null, '{\"creditrule29\":1500,\"creditrule28\":1401,\"creditrule27\":1400,\"creditrule26\":1301,\"creditrule25\":1300,\"creditrule24\":1201,\"creditrule23\":1200,\"creditrule22\":1101,\"creditrule21\":1100,\"creditrule20\":1001,\"creditrule2\":101,\"creditrule1\":100,\"creditrule4\":201,\"creditrule3\":200,\"creditrule0\":1,\"creditrule19\":1000,\"creditrule18\":901,\"creditrule9\":500,\"creditrule7\":400,\"creditrule15\":800,\"creditrule8\":401,\"creditrule14\":701,\"creditrule5\":300,\"creditrule17\":900,\"creditrule6\":301,\"creditrule16\":801,\"creditrule11\":600,\"creditrule10\":501,\"creditrule13\":700,\"creditrule12\":601}', '', 'shopping,health,??,???,???,???,???', '', 'smtp.163.com', '25', 'healthcoin132', 'healthcoin@163.com', 'healthcoin@163.com', '????', '0', '', '10', '', '????,????,????,????,???', '1024', 'sidYearMonthDayImg', 'gif|jpg|jpeg|bmp|png|tbi', '1', '', '0', '', 'shopping,health,??,???,???,???,???', '1', '10', '300', '300', '', '', '', 'normal', '<div id=\"bdshare\" class=\"bdshare_t bds_tools get-codes-bdshare\">\r\n<a class=\"bds_tsina\"></a>\r\n<a class=\"bds_tqq\"></a>\r\n<span class=\"bds_more\">??</span>\r\n<a class=\"shareCount\"></a>\r\n</div>\r\n<script type=\"text/javascript\" id=\"bdshare_js\" data=\"type=tools&uid=5015224\" ></script>\r\n<script type=\"text/javascript\" id=\"bdshell_js\"></script>\r\n<script type=\"text/javascript\">\r\ndocument.getElementById(\"bdshell_js\").src = \"http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=\" + Math.ceil(new Date()/3600000)\r\n</script>', '160', '160', '', '123456', '13641194411', null, 'shopping_admin', '', '{\"alipay_wap\":true,\"balance\":true,\"payafter\":true,\"weixin\":true,\"alipay\":true,\"paypal\":true,\"outline\":true}', 'zh_cn', 'default\r\nblue\r\npink\r\ngreen\r\nblack\r\nviolet\r\nbeach\r\nchina\r\nclothes\r\nwood\r\nlovely\r\nembossed\r\ntea\r\nclassic_black\r\nredware\r\ncoloured_glaze\r\norange\r\nchocolate\r\nbamboo\r\nflax', 'health', 'upload', '{\"creditrule29\":800,\"creditrule28\":751,\"creditrule27\":700,\"creditrule26\":651,\"creditrule25\":650,\"creditrule24\":601,\"creditrule23\":600,\"creditrule22\":551,\"creditrule21\":550,\"creditrule20\":501,\"creditrule2\":51,\"creditrule1\":50,\"creditrule4\":101,\"creditrule3\":100,\"creditrule0\":1,\"creditrule19\":500,\"creditrule18\":451,\"creditrule9\":250,\"creditrule7\":200,\"creditrule15\":400,\"creditrule8\":201,\"creditrule14\":351,\"creditrule5\":150,\"creditrule17\":450,\"creditrule6\":151,\"creditrule16\":401,\"creditrule11\":300,\"creditrule10\":251,\"creditrule13\":350,\"creditrule12\":301}', '', '', 'health', '', '30', '', '1', '2', '3', '426500', '3', '', 'bbs\r\nforum', '', '', '', '', '<meta property=\"wb:webmaster\" content=\"3c0d2bedd819ab1c\" />', '', '857824403', 'c64298f7b04d0a56613b327791d0fa0f', null, '2018-05-19 00:00:04', '0', '0', '7', '3', '20', '8.00', '', '1', '????', '508188494', '13910227615', '0', '', '4c68365adbe58d72', '', '', '', '', '', '', '', '', '', '', '¥', '3', '30', '1', '???', 'blue', '60', '5', '0', '7', '7', '', '50', '1', 'shopping_c2c???', 'jkdserdfger3dfgdfgvbd54dfgdf', '34sdfsdfsdge34sdgsdgdshtgf657sdfgsd43sdfsdgsd', 'shopping_c2c', '???????\r\n          \r\n          \r\n          \r\n          ', null, '426063', '');
 
 -- ----------------------------
 -- Table structure for `shopping_syslog`
@@ -9274,7 +9332,7 @@ CREATE TABLE `shopping_syslog` (
   KEY `FK2BED7C0E1E208F02` (`user_id`),
   CONSTRAINT `FK2BED7C0E1E208F02` FOREIGN KEY (`user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FKEEA95FA8537B6C51` FOREIGN KEY (`user_id`) REFERENCES `shopping_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_syslog
@@ -9845,7 +9903,7 @@ CREATE TABLE `shopping_user` (
   CONSTRAINT `FK9DC054422D77C132` FOREIGN KEY (`photo_id`) REFERENCES `shopping_accessory` (`id`),
   CONSTRAINT `FK9DC05442A24C51C3` FOREIGN KEY (`parent_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FK9DC05442FA5E3FC2` FOREIGN KEY (`area_id`) REFERENCES `shopping_area` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32793 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=32770 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_user
@@ -10131,7 +10189,7 @@ CREATE TABLE `shopping_visit` (
   KEY `FK189103941E208F02` (`user_id`),
   CONSTRAINT `FK189103941E208F02` FOREIGN KEY (`user_id`) REFERENCES `shopping_user` (`id`),
   CONSTRAINT `FK1891039451589842` FOREIGN KEY (`homepage_id`) REFERENCES `shopping_homepage` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_visit
@@ -10153,7 +10211,7 @@ CREATE TABLE `shopping_vlog` (
   UNIQUE KEY `id` (`id`),
   KEY `FK7D74B19F920D7683` (`store_id`),
   CONSTRAINT `FK7D74B19F920D7683` FOREIGN KEY (`store_id`) REFERENCES `shopping_store` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_vlog
@@ -10273,7 +10331,7 @@ CREATE TABLE `shopping_ztc_gold_log` (
   KEY `FKD6ECE372DAA2BF32` (`zgl_goods_id`),
   CONSTRAINT `FK5A722B8C50A38BC3` FOREIGN KEY (`zgl_goods_id`) REFERENCES `shopping_goods1` (`id`),
   CONSTRAINT `FKD6ECE372DAA2BF32` FOREIGN KEY (`zgl_goods_id`) REFERENCES `shopping_goods1` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of shopping_ztc_gold_log
